@@ -1,0 +1,7 @@
+asyncpg==0.29.0
+databases[postgresql]==0.2.6
+fastapi==0.109.0
+SQLAlchemy==1.4.51
+uvicorn==0.27.0
+httpx==0.11.1
+pandas==1.5.3

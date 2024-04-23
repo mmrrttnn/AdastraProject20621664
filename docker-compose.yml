@@ -1,0 +1,28 @@
+version: '3.7'
+
+services:
+  project_service:
+    build: ./project-service
+    command: uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
+    volumes:
+      - ./project-service/:/app/
+    ports:
+      - "8081:8000"
+    environment:
+      - DATABASE_URI=postgresql://project_db_username:project_db_password@project_db/project_db_dev
+    depends_on:
+      - project_db
+
+  project_db:
+    image: postgres:16.1-alpine
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data_project:/var/lib/postgresql/data/
+    environment:
+      - POSTGRES_USER=project_db_username
+      - POSTGRES_PASSWORD=project_db_password
+      - POSTGRES_DB=project_db_dev
+
+volumes:
+  postgres_data_project:
