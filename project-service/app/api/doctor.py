@@ -4,6 +4,8 @@ from fastapi import APIRouter, HTTPException
 from app.api.models import DoctorOut, DoctorCreate, DoctorUpdate
 from app.api import db_manager
 
+import pandas as pd
+
 doctor = APIRouter()
 
 
@@ -42,3 +44,25 @@ async def delete_doctor(id: int):
     if not doctor:
         raise HTTPException(status_code=404, detail="Doctor not found")
     return await db_manager.delete_doctor(id)
+
+
+@doctor.get('/doctors_with_hospitals')
+async def doctors_with_hospitals():
+    doctors = await db_manager.get_all_doctors()
+    hospitals = await db_manager.get_all_hospitals()
+
+    doctors_df = pd.DataFrame(doctors)
+    hospitals_df = pd.DataFrame(hospitals)
+
+    doctors_hospitals_df = pd.merge(doctors_df, hospitals_df, on='hospital_id', how='left')
+    return doctors_hospitals_df.to_dict(orient='records')
+
+
+@doctor.get('/doctors_by_specialization/{specialization}')
+async def doctors_by_specialization(specialization: str):
+    doctors = await db_manager.get_all_doctors()
+    doctors_df = pd.DataFrame(doctors)
+
+    filtered_doctors_df = doctors_df[doctors_df['doctor_specialisation'] == specialization]
+    return filtered_doctors_df.to_dict(orient='records')
+

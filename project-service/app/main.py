@@ -12,8 +12,6 @@ from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from sqlalchemy.exc import SQLAlchemyError
 
-from app.api.seed import seed_data
-
 metadata.create_all(engine)
 
 app = FastAPI(openapi_url="/api/v1/project/openapi.json",
@@ -56,7 +54,6 @@ async def general_exception_handler(request: Request, exc: Exception):
 @app.on_event("startup")
 async def startup():
     await database.connect()
-    await seed_data()
 
 
 @app.on_event("shutdown")

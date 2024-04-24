@@ -4,6 +4,8 @@ from fastapi import APIRouter, HTTPException
 from app.api.models import HospitalOut, HospitalCreate, HospitalUpdate
 from app.api import db_manager
 
+import pandas as pd
+
 hospital = APIRouter()
 
 
@@ -42,3 +44,19 @@ async def delete_hospital(id: int):
     if not hospital:
         raise HTTPException(status_code=404, detail="Hospital not found")
     return await db_manager.delete_hospital(id)
+
+
+@hospital.get('/hospitals_specializations')
+async def hospitals_specializations():
+    hospitals = await db_manager.get_all_hospitals()
+    doctors = await db_manager.get_all_doctors()
+
+    hospitals_df = pd.DataFrame(hospitals)
+    doctors_df = pd.DataFrame(doctors)
+
+    merged_df = pd.merge(hospitals_df, doctors_df, on='hospital_id', how='left')
+
+    hospital_specializations = merged_df.groupby(['hospital_name', 'hospital_address'])['doctor_specialisation'].apply(list).reset_index()
+
+    result = hospital_specializations.to_dict(orient='records')
+    return result

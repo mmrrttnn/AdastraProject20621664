@@ -4,6 +4,8 @@ from fastapi import APIRouter, HTTPException
 from app.api.models import AppointmentOut, AppointmentCreate, AppointmentUpdate
 from app.api import db_manager
 
+import pandas as pd
+
 appointment = APIRouter()
 
 
@@ -42,3 +44,28 @@ async def delete_appointment(id: int):
     if not appointment:
         raise HTTPException(status_code=404, detail="Appointment not found")
     return await db_manager.delete_appointment(id)
+
+
+@appointment.get('/patients_per_hospital')
+async def patients_per_hospital():
+    appointments = await db_manager.get_all_appointments()
+    appointments_df = pd.DataFrame(appointments)
+
+    doctors = await db_manager.get_all_doctors()
+    doctors_df = pd.DataFrame(doctors)
+
+    hospitals = await db_manager.get_all_hospitals()
+    hospitals_df = pd.DataFrame(hospitals)
+
+    merged_df = pd.merge(appointments_df, doctors_df, on='doctor_id', how='left')
+
+    merged_df = pd.merge(merged_df, hospitals_df, on='hospital_id', how='left')
+
+    patients = await db_manager.get_all_patients()
+    patients_df = pd.DataFrame(patients)
+    result_df = pd.merge(merged_df, patients_df, on='patient_id', how='left')
+
+    patients_per_hospital = result_df.groupby(['hospital_name', 'hospital_address']).size().reset_index(name='Number of Patients')
+
+    result = patients_per_hospital.to_dict(orient='records')
+    return result
