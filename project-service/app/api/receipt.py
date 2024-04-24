@@ -6,6 +6,7 @@ from app.api import db_manager
 
 receipt = APIRouter()
 
+
 @receipt.post('/', response_model=ReceiptOut, status_code=201)
 async def create_receipt(payload: ReceiptCreate):
     receipt_id = await db_manager.add_receipt(payload)

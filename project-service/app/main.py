@@ -4,12 +4,15 @@ from app.api.doctor import doctor
 from app.api.hospital import hospital
 from app.api.patient import patient
 from app.api.receipt import receipt
+from app.api import db_manager
 
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.exceptions import RequestValidationError
 from starlette.exceptions import HTTPException as StarletteHTTPException
 from sqlalchemy.exc import SQLAlchemyError
+
+from app.api.seed import seed_data
 
 metadata.create_all(engine)
 
@@ -53,6 +56,7 @@ async def general_exception_handler(request: Request, exc: Exception):
 @app.on_event("startup")
 async def startup():
     await database.connect()
+    await seed_data()
 
 
 @app.on_event("shutdown")

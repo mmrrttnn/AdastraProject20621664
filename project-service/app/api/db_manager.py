@@ -7,7 +7,7 @@ from app.api.models import(
 )
 
 from app.api.db import (
-    hospital, doctor, patient, receipt, appointment
+    hospital, doctor, patient, receipt, appointment, database
 )
 async def add_hospital(payload: HospitalCreate):
     query = hospital.insert().values(**payload.dict())
@@ -23,7 +23,7 @@ async def get_all_hospitals():
             for field in HospitalOut.__fields__.keys()
             if field in results
         }
-        for result in result
+        for result in results
     ]
 
 
@@ -50,9 +50,18 @@ async def update_hospital(id: int, payload: HospitalUpdate):
     return await get_hospital(id)
 
 
-async def add_doctor(payload: DoctorCreate):
+'''async def add_doctor(payload: DoctorCreate):
     query = doctor.insert().values(**payload.dict())
+    return await database.execute(query=query)'''
+async def add_doctor(payload: DoctorCreate):
+    query = doctor.insert().values(
+        doctor_name=payload.doctor_name,
+        doctor_specialisation=payload.doctor_specialization,
+        doctor_phone_number=payload.doctor_phone_number,
+        hospital_id=payload.hospital_id
+    )
     return await database.execute(query=query)
+
 
 
 async def get_all_doctors():

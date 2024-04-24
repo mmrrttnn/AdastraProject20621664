@@ -6,6 +6,7 @@ from app.api import db_manager
 
 appointment = APIRouter()
 
+
 @appointment.post('/', response_model=AppointmentOut, status_code=201)
 async def create_appointment(payload: AppointmentCreate):
     appointment_id = await db_manager.add_appointment(payload)

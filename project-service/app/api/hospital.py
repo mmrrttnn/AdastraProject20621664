@@ -6,6 +6,7 @@ from app.api import db_manager
 
 hospital = APIRouter()
 
+
 @hospital.post('/', response_model=HospitalOut, status_code=201)
 async def create_hospital(payload: HospitalCreate):
     hospital_id = await db_manager.add_hospital(payload)

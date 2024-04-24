@@ -2,6 +2,7 @@ from pydantic import BaseModel
 from typing import List, Optional
 from datetime import datetime, date
 
+
 class HospitalBase(BaseModel):
     hospital_name: str
     hospital_address: str
@@ -24,7 +25,7 @@ class HospitalUpdate(BaseModel):
 
 class DoctorBase(BaseModel):
     doctor_name: str
-    doctor_specialization: str
+    doctor_specialisation: str
     doctor_phone_number: str
     hospital_id: int
 
@@ -42,7 +43,7 @@ class DoctorOut(DoctorBase):
 
 class DoctorUpdate(DoctorBase):
     doctor_name: Optional[str] = None
-    doctor_specialization: Optional[str] = None
+    doctor_specialisation: Optional[str] = None
     doctor_phone_number: Optional[str] = None
     hospital_id: Optional[int] = None
 
@@ -65,7 +66,7 @@ class PatientOut(PatientBase):
 
 class PatientUpdate(PatientBase):
     patient_name: Optional[str] = None
-    patient_address: Optional[str] = None
+    patient_number: Optional[str] = None
 
 
 class ReceiptBase(BaseModel):
